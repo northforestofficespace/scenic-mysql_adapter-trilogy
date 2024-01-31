@@ -78,13 +78,14 @@ module Scenic
 
       # returns a list of views in the current database
       private def view_names
-        execute('SHOW FULL TABLES WHERE table_type = "VIEW"')
-          .map(&:first)
+        execute("SHOW FULL TABLES WHERE table_type = 'VIEW'")
+          .rows.map(&:first)
       end
 
       # returns the SELECT used to create the view
       private def view_definition(name)
         execute("SHOW CREATE VIEW #{quote_table_name(name)}")
+          .rows
           .first[1]
           .sub(/\A.*#{quote_table_name(name)} AS /i, '')
           .gsub(/#{quote_table_name(@connectable.connection.current_database)}\./, '')
